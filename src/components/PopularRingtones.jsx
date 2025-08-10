@@ -1,60 +1,51 @@
-import React, { useState } from "react";
-import { Grid, List, Heart, Volume2, Star, Play, Download } from "lucide-react";
+import React, { useState, useRef, useEffect } from "react";
+import {
+  Grid,
+  List,
+  Heart,
+  Volume2,
+  Star,
+  Play,
+  Download,
+  Pause,
+} from "lucide-react";
+import { ringtones } from "../data/data";
 
 const PopularRingtones = () => {
   const [currentPlaying, setCurrentPlaying] = useState(null);
   const [favorites, setFavorites] = useState(new Set());
-
-  const ringtones = [
-    {
-      id: 1,
-      title: "Shape of You",
-      artist: "Ed Sheeran",
-      duration: "0:30",
-      category: "Pop",
-      uploader: "MusicLover",
-      size: "1.2MB",
-      downloads: "300+",
-      rating: 4.8,
-    },
-    {
-      id: 2,
-      title: "Believer",
-      artist: "Imagine Dragons",
-      duration: "0:28",
-      category: "Rock",
-      uploader: "RockFan",
-      size: "1.1MB",
-      downloads: "250+",
-      rating: 4.6,
-    },
-    {
-      id: 3,
-      title: "Levitating",
-      artist: "Dua Lipa",
-      duration: "0:32",
-      category: "Pop",
-      uploader: "PopStar",
-      size: "1.3MB",
-      downloads: "280+",
-      rating: 4.9,
-    },
-    {
-      id: 4,
-      title: "Blinding Lights",
-      artist: "The Weeknd",
-      duration: "0:27",
-      category: "Pop",
-      uploader: "TuneMaster",
-      size: "1.0MB",
-      downloads: "320+",
-      rating: 4.7,
-    },
-  ];
+  const audioRef = useRef(null);
 
   const togglePlay = (id) => {
-    setCurrentPlaying(currentPlaying === id ? null : id);
+    if (currentPlaying === id) {
+      // Pause if same ringtone playing
+      audioRef.current.pause();
+      setCurrentPlaying(null);
+    } else {
+      // Play selected ringtone
+      const tone = ringtones.find((r) => r.id === id);
+      if (audioRef.current) {
+        audioRef.current.src = tone.audioUrl;
+        audioRef.current.play();
+        setCurrentPlaying(id);
+      }
+    }
   };
+
+  // When audio ends, reset currentPlaying to null
+  useEffect(() => {
+    if (!audioRef.current) return;
+
+    const handleEnded = () => setCurrentPlaying(null);
+
+    audioRef.current.addEventListener("ended", handleEnded);
+
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.removeEventListener("ended", handleEnded);
+      }
+    };
+  }, []);
 
   const toggleFavorite = (id) => {
     const newFavorites = new Set(favorites);
@@ -81,6 +72,7 @@ const PopularRingtones = () => {
 
   return (
     <section className="mx-6 mt-8">
+      <audio ref={audioRef} />
       <div className="flex items-center justify-between mb-6">
         <h4 className="font-bold text-2xl text-gray-800">Popular Ringtones</h4>
         <div className="flex items-center space-x-2 hidden md:flex">
