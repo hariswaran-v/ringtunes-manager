@@ -6,15 +6,13 @@ import "./index.css";
 // Layout
 import GuestLayout from "./layouts/GuestLayout";
 
-// Pages
-import Home from "./pages/Home";
-// import About from "./pages/About"; // example extra page
+import App from "./App";
 
 const router = createBrowserRouter([
   {
     element: <GuestLayout />,
     children: [
-      { path: "/", element: <Home /> },
+      { path: "/", element: <App /> },
       // { path: "/about", element: <About /> }, // example
     ],
   },

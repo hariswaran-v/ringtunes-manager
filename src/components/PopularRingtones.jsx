@@ -1,7 +1,19 @@
-import React from "react";
-import { FaPlay, FaDownload } from "react-icons/fa";
+import React, { useState } from "react";
+import {
+  Grid,
+  List,
+  Heart,
+  Play,
+  Pause,
+  Download,
+  Volume2,
+  Star,
+} from "lucide-react";
 
 const PopularRingtones = () => {
+  const [currentPlaying, setCurrentPlaying] = useState(null);
+  const [favorites, setFavorites] = useState(new Set());
+
   const ringtones = [
     {
       id: 1,
@@ -12,6 +24,7 @@ const PopularRingtones = () => {
       uploader: "MusicLover",
       size: "1.2MB",
       downloads: "300+",
+      rating: 4.8,
     },
     {
       id: 2,
@@ -22,6 +35,7 @@ const PopularRingtones = () => {
       uploader: "RockFan",
       size: "1.1MB",
       downloads: "250+",
+      rating: 4.6,
     },
     {
       id: 3,
@@ -32,6 +46,7 @@ const PopularRingtones = () => {
       uploader: "PopStar",
       size: "1.3MB",
       downloads: "280+",
+      rating: 4.9,
     },
     {
       id: 4,
@@ -42,63 +57,137 @@ const PopularRingtones = () => {
       uploader: "TuneMaster",
       size: "1.0MB",
       downloads: "320+",
+      rating: 4.7,
     },
   ];
 
+  const togglePlay = (id) => {
+    setCurrentPlaying(currentPlaying === id ? null : id);
+  };
+
+  const toggleFavorite = (id) => {
+    const newFavorites = new Set(favorites);
+    if (newFavorites.has(id)) {
+      newFavorites.delete(id);
+    } else {
+      newFavorites.add(id);
+    }
+    setFavorites(newFavorites);
+  };
+
+  const getCategoryColor = (category) => {
+    switch (category.toLowerCase()) {
+      case "pop":
+        return "bg-pink-100 text-pink-600 border-pink-200";
+      case "rock":
+        return "bg-red-100 text-red-600 border-red-200";
+      case "electronic":
+        return "bg-purple-100 text-purple-600 border-purple-200";
+      default:
+        return "bg-blue-100 text-blue-600 border-blue-200";
+    }
+  };
+
   return (
-    <section className="mx-6 mt-3">
-      <h4 className="font-semibold text-lg">Popular Ringtones</h4>
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+    <section className="mx-6 mt-8">
+      <div className="flex items-center justify-between mb-6">
+        <h4 className="font-bold text-2xl text-gray-800">Popular Ringtones</h4>
+        <div className="flex items-center space-x-2">
+          <button className="p-2 rounded-lg bg-white border-2 border-gray-200 hover:border-pink-400 transition-colors">
+            <Grid className="w-5 h-5 text-gray-600" />
+          </button>
+          <button className="p-2 rounded-lg bg-white border-2 border-gray-200 hover:border-pink-400 transition-colors">
+            <List className="w-5 h-5 text-gray-600" />
+          </button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {ringtones.map((tone) => (
-          <div key={tone.id} className="bg-gray-300 rounded p-5 mt-3">
-            <div className="flex space-x-4">
-              {/* Left Content */}
-              <div>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="50"
-                  height="50"
-                  viewBox="0 0 24 24"
-                  className="text-rose-500"
-                >
-                  <path
-                    fill="currentColor"
-                    d="m10 16l6-4l-6-4zm2 6q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12q0-1.075.225-2.113t.65-2.012l1.55 1.55q-.2.65-.312 1.287T4 12q0 3.35 2.325 5.675T12 20t5.675-2.325T20 12t-2.325-5.675T12 4q-.675 0-1.312.112t-1.263.313L7.9 2.9q1-.45 2-.675T12 2q2.075 0 3.9.787t3.175 2.138T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22M5.5 7q-.625 0-1.062-.437T4 5.5t.438-1.062T5.5 4t1.063.438T7 5.5t-.437 1.063T5.5 7m6.5 5"
-                  />
-                </svg>
+          <div
+            key={tone.id}
+            className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border-2 border-gray-100 hover:border-pink-200"
+          >
+            {/* Header with Category and Favorite */}
+            <div className="flex items-center justify-between mb-4">
+              <span
+                className={`px-3 py-1 rounded-full text-xs font-semibold border-2 ${getCategoryColor(
+                  tone.category
+                )}`}
+              >
+                {tone.category}
+              </span>
+              <button
+                onClick={() => toggleFavorite(tone.id)}
+                className="text-gray-400 hover:text-red-500 transition-colors"
+              >
+                <Heart
+                  className={`w-5 h-5 ${
+                    favorites.has(tone.id) ? "fill-current text-red-500" : ""
+                  }`}
+                />
+              </button>
+            </div>
+
+            {/* Music Icon and Content */}
+            <div className="flex items-start space-x-4 mb-4">
+              <div className="w-12 h-12 bg-gradient-to-r from-pink-400 to-purple-400 rounded-xl flex items-center justify-center flex-shrink-0">
+                <Volume2 className="w-6 h-6 text-white" />
               </div>
-              {/* Right Content */}
-              <div className="space-y-2 flex-1 relative">
-                <span className="absolute right-0 bg-green-300 px-3 py-2 text-xs font-semibold uppercase rounded">
-                  {tone.category}
-                </span>
-                <h4 className="font-semibold">{tone.title}</h4>
-                <small>Uploaded by {tone.uploader}</small>
-                <p className="text-xs">
-                  Music:{" "}
-                  <a href="#" className="hover:text-rose-600">
-                    {tone.artist}
-                  </a>
+
+              <div className="flex-1 min-w-0">
+                <h5 className="font-bold text-lg text-gray-800 truncate">
+                  {tone.title}
+                </h5>
+                <p className="text-gray-600 text-sm">by {tone.artist}</p>
+                <p className="text-gray-500 text-xs">
+                  Uploaded by {tone.uploader}
                 </p>
-                <div className="pt-1 flex space-x-2">
-                  <span className="bg-rose-300 px-2 py-1 rounded uppercase text-sm font-medium">
-                    {tone.duration}
-                  </span>
-                  <span className="bg-rose-300 px-2 py-1 rounded uppercase text-sm font-medium">
-                    {tone.size}
-                  </span>
-                  <span className="bg-rose-300 px-2 py-1 rounded uppercase text-sm font-medium">
-                    {tone.downloads}
-                  </span>
-                </div>
               </div>
             </div>
-            <div className="flex gap-3 mt-4">
-              <button className="flex-1 bg-rose-500 hover:bg-rose-600 px-4 py-1 rounded text-white font-semibold flex items-center justify-center gap-2">
-                <FaPlay size={16} /> Play
+
+            {/* Stats */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center space-x-1">
+                <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                <span className="text-sm text-gray-600">{tone.rating}</span>
+              </div>
+              <span className="text-sm text-gray-600">
+                {tone.downloads} downloads
+              </span>
+            </div>
+
+            {/* Tags */}
+            <div className="flex flex-wrap gap-2 mb-4">
+              <span className="bg-orange-100 text-orange-600 px-2 py-1 rounded-lg text-xs font-medium border border-orange-200">
+                {tone.duration}
+              </span>
+              <span className="bg-green-100 text-green-600 px-2 py-1 rounded-lg text-xs font-medium border border-green-200">
+                {tone.size}
+              </span>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-3">
+              <button
+                onClick={() => togglePlay(tone.id)}
+                className="flex-1 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white py-2 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all duration-300 transform hover:scale-105 shadow-md"
+              >
+                {currentPlaying === tone.id ? (
+                  <>
+                    <Pause className="w-4 h-4" />
+                    <span className="text-sm">Pause</span>
+                  </>
+                ) : (
+                  <>
+                    <Play className="w-4 h-4" />
+                    <span className="text-sm">Play</span>
+                  </>
+                )}
               </button>
-              <button className="flex-1 bg-green-500 hover:bg-green-600 px-4 py-1 rounded text-white font-semibold flex items-center justify-center gap-2">
-                <FaDownload size={16} /> Download Now
+              <button className="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white py-2 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all duration-300 transform hover:scale-105 shadow-md">
+                <Download className="w-4 h-4" />
+                <span className="text-sm">Download</span>
               </button>
             </div>
           </div>
